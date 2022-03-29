@@ -1,7 +1,8 @@
+// https://leetcode.com/problems/print-in-order/
+
 #include <iostream>
 #include <thread>
 #include <mutex>
-#include <chrono>
 #include <condition_variable>
 
 std::mutex gLock;
@@ -10,9 +11,7 @@ std::condition_variable gConditionVariable;
 class Foo {
 
     int state = 1;
-    
-
-
+  
     public: 
         void first() {
             {
