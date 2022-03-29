@@ -53,6 +53,7 @@ class Foo {
                     gConditionVariable.wait(lock);
                 }
             }
+
             std::cout << "third" << std::endl;
 
             {
