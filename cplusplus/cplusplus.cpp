@@ -16,9 +16,7 @@ class Foo {
         void first() {
             {
                 std::unique_lock<std::mutex> lock(gLock);
-                while (state != 1) {
-                    gConditionVariable.wait(lock);
-                }
+                gConditionVariable.wait(lock, [](){ return state != 1;});
             }
 
             std::cout << "first" << std::endl;
@@ -33,9 +31,7 @@ class Foo {
         void second() {
             {
                 std::unique_lock<std::mutex> lock(gLock);
-                while (state != 2) {
-                    gConditionVariable.wait(lock);
-                }
+                gConditionVariable.wait(lock, [](){ return state != 2;});
             }
             std::cout << "second" << std::endl;
 
@@ -49,9 +45,7 @@ class Foo {
         void third() {
             {
                 std::unique_lock<std::mutex> lock(gLock);
-                while (state != 3) {
-                    gConditionVariable.wait(lock);
-                }
+                gConditionVariable.wait(lock, [](){ return state != 3;});
             }
 
             std::cout << "third" << std::endl;
