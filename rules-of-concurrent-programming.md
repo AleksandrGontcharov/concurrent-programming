@@ -3,10 +3,14 @@
 ## Rules
 
 1. Lock shared resources
-2. Do not put notify_one() or notify_all() inside of a lock scope
-3. Never invoke methods inside of a lock scope whose code is not directly under your control. The implementation of those methods can be overridden (if it is a virtual method) or changed. General rule of thumb: avoid putting methods in a lock scope.
-4. Use notify_all() vs notify_one(): It is harder to prove the correctness of such code in all cases and it doesn't hurt to use notify_all().
-5. Do not use anything outside of the scope of what you have learned.
+2. Never invoke methods inside of a lock scope whose code is not directly under your control. The implementation of those methods can be overridden (if it is a virtual method) or changed. General rule of thumb: avoid putting methods in a lock scope.
+3. Use notify_all() vs notify_one(): It is harder to prove the correctness of such code in all cases and it doesn't hurt to use notify_all().
+4. Do not use anything outside of the scope of what you have learned.
+
+## Other conventions 
+
+1. Do not put notify_one() or notify_all() inside of a lock scope. This is writing apriori suboptimal code.
+
 
 ## Notes
 
