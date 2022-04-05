@@ -27,8 +27,8 @@ class Foo {
             {
                 std::unique_lock<std::mutex> lock(gLock);
                 state = 2;
-                gConditionVariable.notify_all();
             }
+            gConditionVariable.notify_all();
         }
 
         void second() {
@@ -41,8 +41,8 @@ class Foo {
             {
                 std::unique_lock<std::mutex> lock(gLock);
                 state = 3;
-                gConditionVariable.notify_all();
             }
+            gConditionVariable.notify_all();
         }
 
         void third() {
@@ -56,8 +56,8 @@ class Foo {
             {
                 std::unique_lock<std::mutex> lock(gLock);
                 state = 1;
-                gConditionVariable.notify_all();
             }
+            gConditionVariable.notify_all();
         }
 };
 
