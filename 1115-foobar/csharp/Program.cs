@@ -5,7 +5,7 @@ using System.Runtime.ExceptionServices;
 public class FooBar
 {
 
-    private int n;
+    private readonly int n;
 
     public FooBar(int n)
     {
