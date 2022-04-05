@@ -9,7 +9,7 @@
 
 ## Other conventions 
 
-1. Do not put notify_one() or notify_all() inside of a lock scope. This is writing apriori suboptimal code.
+1. Do not put notify_one() or notify_all() inside of a lock scope in C++ to make code reviewers happy, but do it in such a way that it doesn't compromise correctness. Putting notify in a lock is writing apriori suboptimal code since you cannot unlock that which is currently in a lock, so there will be several trips made to unlock it.
 
 
 ## Notes
