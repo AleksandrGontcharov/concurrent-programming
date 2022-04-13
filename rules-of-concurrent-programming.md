@@ -1,6 +1,15 @@
 # Rules of concurrent programming
 
-## Rules
+## Rules of the road
+
+To be applied in order.
+
+1. Do not use multiple threads unless you need to
+2. If you still want to use multiple threads - do not have any shared resources
+3. If multiple threads and shared resources are still needed - always put the shared mutable resources under a lock
+
+
+## Notes
 
 1. Lock shared mutable resources
   --Note: sharing immutable things is fine
