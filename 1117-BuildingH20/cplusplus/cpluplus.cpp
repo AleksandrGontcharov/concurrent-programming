@@ -9,98 +9,97 @@ using namespace std;
 std::mutex gLock;
 std::condition_variable gConditionVariable;
 
-class ZeroEvenOdd {
+class H2O {
 private:
-    int n;
-    int state = 1;
+    int h = 2;
+    int o = 1;
+    std::mutex gLock;
+    std::condition_variable gConditionVariable;
 
 public:
-    ZeroEvenOdd(int n) {
-        this->n = n;
+    H2O() {
     }
 
     // printNumber(x) outputs "x", where x is an integer.
-    void zero(function<void(int)> printNumber) {
+    void hydrogen(function<void()> releaseHydrogen) {
+        
+        std::unique_lock<std::mutex> lock(gLock);
+        gConditionVariable.wait(lock, [&](){ return h > 0;});
+        releaseHydrogen();
 
-            for (int i = 1; i <= n; i++) {
-                {
-                    std::unique_lock<std::mutex> lock(gLock);
-                    gConditionVariable.wait(lock, [&](){ return state == 1;});
-                }
-
-                printNumber(0);
-
-                {
-                    std::unique_lock<std::mutex> lock(gLock);
-                    if (i % 2 == 1) {
-                        state = 3;
-                    } else {
-                        state = 2;
-                    }
-                }
-                gConditionVariable.notify_all();
-            }
+        h = h - 1;
+        
+        if (h + o == 0) {
+            h = 2;
+            o = 1;
         }
+        gConditionVariable.notify_all();
 
-        void even(function<void(int)> printNumber) {
-             for (int i = 2; i <= n; i = i + 2) {
-                {
-                    std::unique_lock<std::mutex> lock(gLock);
-                    gConditionVariable.wait(lock, [&](){ return state == 2;});
-                }
-                
-                printNumber(i);
-                
-                {
-                    std::unique_lock<std::mutex> lock(gLock);
-                    state = 1;
-                }
-                gConditionVariable.notify_all();
-            }
-        }
-        void odd(function<void(int)> printNumber) {
-             for (int i = 1; i <= n; i = i + 2) {
-                {
-                    std::unique_lock<std::mutex> lock(gLock);
-                    gConditionVariable.wait(lock, [&](){ return state == 3;});
-                }
-                
-                printNumber(i);
 
-                {
-                    std::unique_lock<std::mutex> lock(gLock);
-                    state = 1;
-                }
-                gConditionVariable.notify_all();
-            }
+    }
+
+    void oxygen(function<void()> releaseOxygen) {
+
+        std::unique_lock<std::mutex> lock(gLock);
+        gConditionVariable.wait(lock, [&](){ return o > 0;});
+        
+        // releaseOxygen() outputs "O". Do not change or remove this line.
+        releaseOxygen();
+
+        o = o - 1;
+        
+        if (h + o == 0) {
+            h = 2;
+            o = 1;
         }
+        gConditionVariable.notify_all();
+    }
 };
 
 void printNumber(int x) {
     std::cout << x;
 }
 
+void releaseHydrogen() {
+    std::cout << "H";
+}
+
+void releaseOxygen() {
+    std::cout << "O";
+}
+
+
 int main()
 {
-    ZeroEvenOdd foo(8);
+    H2O foo;
 
-
-    std::thread threadA([&] {
-                foo.zero(printNumber);
+    std::thread threadH_1([&] {
+                foo.hydrogen(releaseHydrogen);
+                });
+    std::thread threadH_2([&] {
+                foo.hydrogen(releaseHydrogen);
+                });
+    std::thread threadH_3([&] {
+                foo.hydrogen(releaseHydrogen);
+                });
+    std::thread threadH_4([&] {
+                foo.hydrogen(releaseHydrogen);
                 });
     
-    std::thread threadB([&] {
-        foo.even(printNumber);
+    std::thread threadO_1([&] {
+        foo.oxygen(releaseOxygen);
         });
-    
-    std::thread threadC([&] {
-        foo.odd(printNumber);
+    std::thread threadO_2([&] {
+        foo.oxygen(releaseOxygen);
         });
     
 
-    threadA.join();
-    threadB.join();
-    threadC.join();
+    threadH_1.join();
+    threadO_1.join();
+    threadH_2.join();
+    threadH_3.join();
+    threadH_4.join();
+    threadO_2.join();
 
     return(0);
 }
