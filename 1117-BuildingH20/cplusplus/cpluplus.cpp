@@ -85,6 +85,12 @@ int main()
     std::thread threadH_4([&] {
                 foo.hydrogen(releaseHydrogen);
                 });
+    std::thread threadH_5([&] {
+                foo.hydrogen(releaseHydrogen);
+                });
+    std::thread threadH_6([&] {
+                foo.hydrogen(releaseHydrogen);
+                });
     
     std::thread threadO_1([&] {
         foo.oxygen(releaseOxygen);
@@ -92,14 +98,20 @@ int main()
     std::thread threadO_2([&] {
         foo.oxygen(releaseOxygen);
         });
+    std::thread threadO_3([&] {
+        foo.oxygen(releaseOxygen);
+        });
     
 
     threadH_1.join();
-    threadO_1.join();
     threadH_2.join();
     threadH_3.join();
     threadH_4.join();
+    threadH_5.join();
+    threadH_6.join();
+    threadO_1.join();
     threadO_2.join();
+    threadO_3.join();
 
     return(0);
 }
