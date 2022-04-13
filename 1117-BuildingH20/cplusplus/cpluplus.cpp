@@ -20,11 +20,11 @@ public:
     H2O() {
     }
 
-    // printNumber(x) outputs "x", where x is an integer.
     void hydrogen(function<void()> releaseHydrogen) {
         
         std::unique_lock<std::mutex> lock(gLock);
         gConditionVariable.wait(lock, [&](){ return h > 0;});
+
         releaseHydrogen();
 
         h = h - 1;
@@ -34,8 +34,6 @@ public:
             o = 1;
         }
         gConditionVariable.notify_all();
-
-
     }
 
     void oxygen(function<void()> releaseOxygen) {
@@ -43,7 +41,6 @@ public:
         std::unique_lock<std::mutex> lock(gLock);
         gConditionVariable.wait(lock, [&](){ return o > 0;});
         
-        // releaseOxygen() outputs "O". Do not change or remove this line.
         releaseOxygen();
 
         o = o - 1;
