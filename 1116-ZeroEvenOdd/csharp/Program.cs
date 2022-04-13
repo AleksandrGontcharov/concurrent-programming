@@ -29,7 +29,11 @@ public class ZeroEvenOdd {
 
             lock (this)
             {
-                _state = 2;
+                if (i % 2 == 1) {
+                        _state = 3;
+                    } else {
+                        _state = 2;
+                    }
                 Monitor.PulseAll(this);
             }
         }
@@ -37,7 +41,7 @@ public class ZeroEvenOdd {
     
      public void Even(Action<int> printNumber) {
         
-        for (int i = 1; i <= n; i++)
+        for (int i = 2; i <= n; i = i + 2)
         {
 
             lock (this)
@@ -47,12 +51,12 @@ public class ZeroEvenOdd {
                     Monitor.Wait(this);
                 }
             }
-            if (i % 2 == 0 ) { 
-                printNumber(i);
-            }
+            
+            printNumber(i);
+            
             lock (this)
             {
-                _state = 3;
+                _state = 1;
                 Monitor.PulseAll(this);
             }
 
@@ -62,7 +66,7 @@ public class ZeroEvenOdd {
     
         public void Odd(Action<int> printNumber)   {
 
-        for (int i = 1; i <= n; i++)
+        for (int i = 1; i <= n; i = i + 2)
         {
 
             lock (this)
@@ -73,10 +77,7 @@ public class ZeroEvenOdd {
                 }
             }
 
-            if (i % 2 == 1)
-            {
-                  printNumber(i);
-            }
+            printNumber(i);
 
             lock (this)
             {
@@ -90,7 +91,7 @@ public class ZeroEvenOdd {
 
     static void Main()
     {
-        ZeroEvenOdd foo = new ZeroEvenOdd(5);
+        ZeroEvenOdd foo = new ZeroEvenOdd(9);
         // Display the number of command line arguments.
         Console.WriteLine("Enter one of 123, 132, 321, 312, 213, 231");
         Console.WriteLine("This will determine the thread assigned to the printing of 'first', 'second' and 'third'");
