@@ -1,21 +1,18 @@
 ﻿// https://leetcode.com/problems/print-in-order/
 
 namespace program;
-public class ZeroEvenOdd
-{
-    private readonly int n;
-
-    public ZeroEvenOdd(int n)
-    {
-        this.n = n;
-        Console.WriteLine($"Initialized with n = {this.n}");
-    }
-
+public class ZeroEvenOdd {
+    private int n;
+    
     static readonly object _locker = new object();
     int _state = 1;
-
-    public void Zero()
-    {
+    
+    public ZeroEvenOdd(int n) {
+        this.n = n;
+    }
+    
+    public void Zero(Action<int> printNumber) {
+        
         for (int i = 1; i <= n; i++)
         {
 
@@ -27,7 +24,8 @@ public class ZeroEvenOdd
                 }
             }
 
-            Console.WriteLine($"0 - {Thread.CurrentThread.Name}");
+            printNumber(0);
+
 
             lock (this)
             {
@@ -36,10 +34,9 @@ public class ZeroEvenOdd
             }
         }
     }
-
-    public void Even()
-    {
-
+    
+     public void Even(Action<int> printNumber) {
+        
         for (int i = 1; i <= n; i++)
         {
 
@@ -50,11 +47,9 @@ public class ZeroEvenOdd
                     Monitor.Wait(this);
                 }
             }
-            if (i % 2 == 0)
-            {
-                Console.WriteLine($"{i} - {Thread.CurrentThread.Name}");
-            }   
-
+            if (i % 2 == 0 ) { 
+                printNumber(i);
+            }
             lock (this)
             {
                 _state = 3;
@@ -62,10 +57,10 @@ public class ZeroEvenOdd
             }
 
         }
+        
     }
-
-    public void Odd()
-    {
+    
+        public void Odd(Action<int> printNumber)   {
 
         for (int i = 1; i <= n; i++)
         {
@@ -80,8 +75,9 @@ public class ZeroEvenOdd
 
             if (i % 2 == 1)
             {
-                Console.WriteLine($"{i} - {Thread.CurrentThread.Name}");
-            } 
+                  printNumber(i);
+            }
+
             lock (this)
             {
                 _state = 1;
@@ -90,6 +86,7 @@ public class ZeroEvenOdd
 
         }
     }
+
 
     static void Main()
     {
@@ -109,19 +106,24 @@ public class ZeroEvenOdd
             userInput = Console.ReadLine();
         };
 
+        void printNumber(int x)
+        {
+            Console.Write(x);
+        }
+
         // Create threads and assign names
 
-        Thread threadA = (userInput.ElementAt(0).ToString() == "1") ? new Thread(foo.Zero) : ((userInput.ElementAt(0).ToString() == "2") ? new Thread(foo.Even) : new Thread(foo.Odd));
+        Thread threadA = (userInput.ElementAt(0).ToString() == "1") ? new Thread(() => foo.Zero(printNumber)) : ((userInput.ElementAt(0).ToString() == "2") ? new  Thread(() => foo.Even(printNumber)) : new Thread(() => foo.Odd(printNumber)));
         threadA.Name = "Thread A";
 
-        Thread threadB = (userInput.ElementAt(1).ToString() == "1") ? new Thread(foo.Zero) : ((userInput.ElementAt(1).ToString() == "2") ? new Thread(foo.Even) : new Thread(foo.Odd));
+        Thread threadB = (userInput.ElementAt(1).ToString() == "1") ? new  Thread(() => foo.Zero(printNumber)) : ((userInput.ElementAt(1).ToString() == "2") ? new Thread(() => foo.Even(printNumber)) : new Thread(() => foo.Odd(printNumber)));
         threadB.Name = "Thread B";
 
-        Thread threadC = (userInput.ElementAt(2).ToString() == "1") ? new Thread(foo.Zero) : ((userInput.ElementAt(2).ToString() == "2") ? new Thread(foo.Even) : new Thread(foo.Odd));
+        Thread threadC = (userInput.ElementAt(2).ToString() == "1") ? new  Thread(() => foo.Zero(printNumber)) : ((userInput.ElementAt(2).ToString() == "2") ? new Thread(() => foo.Even(printNumber)) : new Thread(() => foo.Odd(printNumber)));
         threadC.Name = "Thread C";
 
         threadA.Start();
         threadB.Start();
         threadC.Start();
     }
-}
+};
