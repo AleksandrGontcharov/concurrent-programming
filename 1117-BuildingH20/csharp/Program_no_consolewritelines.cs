@@ -1,10 +1,7 @@
-﻿
-
-
-using System.Globalization;
+﻿using System.Globalization;
 using System.Runtime.ExceptionServices;
 
-namespace H20_BARRIER;
+namespace H20_BARRIER_nowritlens;
 public class H2O
 {
 
@@ -15,39 +12,32 @@ public class H2O
 
     static readonly object _locker = new object();
 
-    int H = 0;
-    int O = 0;
-    bool _switch = true;
-    int element_number = 0;
+    int H = 0; // Counts the number of Hs in the molecule (0, 1, or 2) - will reset before the creation of the next molecule
+    int O = 0; // Counts the number of Os in the molecule (0 or 1) - will reset before the creation of the next molecule
+    int element_number = 0; // Ensures that all three elements are created before the next molecule is created - using Modulo 3 to determine when to pulse the next set of elements
 
     public void Hydrogen(Action releaseHydrogen)
     {
         lock (_locker)
         {
-            _switch = false;
-            
-
             // Trap #1
             while (!(H < 2))
             {
-                Console.WriteLine($"    {Thread.CurrentThread.Name} stuck in TRAP #1 => H = {H}, O = {O}");
                 // This traps the 3rd/4th/5th.. hydrogens
                 Monitor.Wait(_locker);
             }
             // This lets through the first two Hydrogens
             H += 1;
 
-            Console.WriteLine($"    {Thread.CurrentThread.Name} I will get passed TRAP #2 and I am third element of H20  = {(H == 2 && O == 1)} - I must inform the others in trap #2 to release ourselves");
 
             if ((H == 2 && O == 1))
             {
                 Monitor.PulseAll(_locker);
             }
 
-            //// Trap #2
+            /// Trap #2
             while (!(H == 2 && O == 1))
             {
-                Console.WriteLine($"    {Thread.CurrentThread.Name} stuck in TRAP #2 Because I am either first or second element of H20 => H = {H}, O = {O}");
                 // Now we "Trap" the oxygen until we have a full H20 molecule
                 Monitor.Wait(_locker);
             }
@@ -57,14 +47,11 @@ public class H2O
         lock (_locker)
         {
             element_number += 1;
-            _switch = (element_number % 3 == 0);
-            Console.WriteLine($"    {Thread.CurrentThread.Name} Ready for the next element - I am element number {element_number} I can pulse all {_switch}");
 
-            // The switch ensures that all three elements of the previosu H20 molecule were printed before we can pulse the next set
-            if (_switch) {
+            // The switch ensures that all three elements of the previous H20 molecule were printed before we can pulse the next set
+            if (element_number % 3 == 0) {
                 H = 0;
                 O = 0;
-                Console.WriteLine($"    {Thread.CurrentThread.Name} Finally pulsing -  H = {H}, O = {O}");
                 Monitor.PulseAll(_locker);
             }
         }
@@ -78,7 +65,6 @@ public class H2O
             // Trap #1
             while (!(O < 1))
             {
-                Console.WriteLine($"    {Thread.CurrentThread.Name} stuck in TRAP #1 => H = {H}, O = {O}");
 
                 // This traps the 2rd/3th/4th.. oxygen
                 Monitor.Wait(_locker);
@@ -86,7 +72,6 @@ public class H2O
             // This lets through the first Oxygen
             O += 1;
 
-            Console.WriteLine($"    {Thread.CurrentThread.Name} I will get passed TRAP #2 and I am third element of H20  = {(H == 2 && O == 1)} - I must inform the others in trap #2 to release ourselves");
 
             if ((H == 2 && O == 1))
             {
@@ -96,7 +81,6 @@ public class H2O
             //// Trap #2
             while (!(H == 2 && O == 1))
             {
-                Console.WriteLine($"    {Thread.CurrentThread.Name} stuck in TRAP #2 Because I am either first or second element of H20 => H = {H}, O = {O}");
                 // Now we "Trap" the oxygen until we have a full H20 molecule
                 Monitor.Wait(_locker);
             }
@@ -107,23 +91,19 @@ public class H2O
 
         lock (_locker)
         {
-            //O = 0;
             element_number += 1;
-            _switch = (element_number % 3 == 0);
-            Console.WriteLine($"    {Thread.CurrentThread.Name} Ready for the next element - I am element number {element_number} I can pulse all {_switch}");
-            if (_switch)
-            {
+
+            // The switch ensures that all three elements of the previous H20 molecule were printed before we can pulse the next set
+            if (element_number % 3 == 0) {
                 H = 0;
                 O = 0;
-                Console.WriteLine($"    {Thread.CurrentThread.Name} Finally pulsing -  H = {H}, O = {O}");
-
                 Monitor.PulseAll(_locker);
             }
         }
     }
 
 
-    static void Main12()
+    static void Main()
     {
         H2O foo = new H2O();
 

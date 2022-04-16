@@ -4,9 +4,10 @@
 
 To be applied in order.
 
-1. Do not use multiple threads unless you need to
-2. If you still want to use multiple threads - do not have any shared resources
-3. If multiple threads and shared resources are still needed - always put the shared mutable resources under a lock
+1. Do not use multiple threads unless you need to - share nothing
+2. If you still want to use multiple threads - do not have any shared resources - share immutable things
+3. If multiple threads and shared resources are still needed - always put the shared mutable resources under a lock - only one owner at a time (prod consumer queue)
+4. use locks
 
 
 ## Notes
