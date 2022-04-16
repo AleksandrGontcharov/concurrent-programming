@@ -30,7 +30,7 @@ public class H2O
             H += 1;
 
             // If this is the final element of the H20 molecule, then we will skip trap #2 and that means that 2 elements are already in Trap #2 
-            // we will PulseAll to let our peers know that we are ready to go. Note that anyone in trap #1 will still be stuck there all three are released
+            // we will PulseAll to let our peers know that we are ready to go. Note that anyone in trap #1 will still be stuck there until all three are released
             if ((H == 2 && O == 1))
             {
                 Monitor.PulseAll(_locker);
@@ -39,7 +39,7 @@ public class H2O
             /// Trap #2
             while (!(H == 2 && O == 1))
             {
-                // Now we the first two elements of H20 molecule here
+                // Now we trap the first two elements of H20 molecule here
                 Monitor.Wait(_locker);
             }
         }
@@ -74,7 +74,7 @@ public class H2O
             O += 1;
 
             // If this is the final element of the H20 molecule, then we will skip trap #2 and that means that 2 elements are already in Trap #2 
-            // we will PulseAll to let our peers know that we are ready to go. Note that anyone in trap #1 will still be stuck there all three are released
+            // we will PulseAll to let our peers know that we are ready to go. Note that anyone in trap #1 will still be stuck there until all three are released
             if ((H == 2 && O == 1))
             {
                 Monitor.PulseAll(_locker);
@@ -83,7 +83,7 @@ public class H2O
             /// Trap #2
             while (!(H == 2 && O == 1))
             {
-                // Now we the first two elements of H20 molecule here
+                // Now we trap the first two elements of H20 molecule here
                 Monitor.Wait(_locker);
             }
         }
