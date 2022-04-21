@@ -4,10 +4,10 @@
 
 To be applied in order.
 
-1. Do not use multiple threads unless you need to - share nothing
-2. If you still want to use multiple threads - do not have any shared resources - share immutable things
-3. If multiple threads and shared resources are still needed - always put the shared mutable resources under a lock - only one owner at a time (prod consumer queue)
-4. use locks
+1. Share nothing
+2. Share immutable things
+3. Always put the shared mutable resources under a lock - only one owner at a time
+
 
 
 ## Notes
@@ -17,6 +17,7 @@ To be applied in order.
 2. Never invoke methods inside of a lock scope whose code is not directly under your control including virtual methods. The implementation of those methods can be overridden (if it is a virtual method) or changed.
 3. Use notify_all() vs notify_one(): It is harder to prove the correctness of such code in all cases and it doesn't hurt to use notify_all().
 4. Do not use anything outside of the scope of what you have learned.
+5. You dhould have wakeup/Pulse/Notify *every time* you change variables you use in wait conditions. This makes it easier to check for correctness.
 
 ## Other conventions 
 
