@@ -24,7 +24,7 @@ private:
             }
     }
     // This method is called under a lock
-    void releaseThisMolecule() {
+    void releaseMolecule() {
         if ((h == 2 && o == 1))
             {
                 trapUntilWeFormMolecule.notify_all();
@@ -39,7 +39,7 @@ public:
         trapUntilAtomsForNextMoleculeArrived.wait(lock, [&](){ return h < 2;});
         h += 1;
 
-        releaseThisMolecule();
+        releaseMolecule();
 
         trapUntilWeFormMolecule.wait(lock, [&](){ return (h == 2 && o == 1);});
 
@@ -61,7 +61,10 @@ public:
         trapUntilAtomsForNextMoleculeArrived.wait(lock, [&](){ return o < 1;});
         o += 1;
 
-        releaseThisMolecule();
+        if ((h == 2 && o == 1))
+            {
+                trapUntilWeFormMolecule.notify_all();
+            }
 
         trapUntilWeFormMolecule.wait(lock, [&](){ return (h == 2 && o == 1);});
         }
