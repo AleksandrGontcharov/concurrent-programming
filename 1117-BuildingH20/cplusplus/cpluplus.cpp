@@ -15,24 +15,40 @@ private:
     int o = 0;
     int element_number = 0;
     std::mutex gLock;
-    std::condition_variable trapOne;
-    std::condition_variable trapTwo;
+    std::condition_variable trapSurplusElements;
+    std::condition_variable trapUntilWeFormMolecule;
+
+    void releaseNextSetOfElements() {
+        if (element_number % 3 == 0) {
+                h = 0;
+                o = 0;
+                trapSurplusElements.notify_all();
+            }
+    }
+
+    void releaseThisMolecule() {
+        if ((h == 2 && o == 1))
+            {
+                trapUntilWeFormMolecule.notify_all();
+            }
+    }
+
 
 public:
     H2O() {
     }
 
     void hydrogen(function<void()> releaseHydrogen) {
-        // std::cout << "starting hydrogen" << h << std::endl;
         {
         std::unique_lock<std::mutex> lock(gLock);
-        trapOne.wait(lock, [&](){ return h < 2;});
+        trapSurplusElements.wait(lock, [&](){ return h < 2;});
         h += 1;
-        trapTwo.notify_all();
 
+        releaseThisMolecule();
 
-                
-        trapTwo.wait(lock, [&](){ return (h == 2 && o == 1);});
+        trapUntilWeFormMolecule.notify_all();
+
+        trapUntilWeFormMolecule.wait(lock, [&](){ return (h == 2 && o == 1);});
 
         }
 
@@ -42,24 +58,19 @@ public:
             std::unique_lock<std::mutex> lock(gLock);
             element_number += 1;
 
-            if (element_number % 3 == 0) {
-                h = 0;
-                o = 0;
-                trapOne.notify_all();
-            }
+            releaseNextSetOfElements();
         }
     }
 
     void oxygen(function<void()> releaseOxygen) {
-        // std::cout << "starting oxygen" << std::endl;
-        
         {
         std::unique_lock<std::mutex> lock(gLock);
-        trapOne.wait(lock, [&](){ return o < 1;});
+        trapSurplusElements.wait(lock, [&](){ return o < 1;});
         o += 1;
-        trapTwo.notify_all();
 
-        trapTwo.wait(lock, [&](){ return (h == 2 && o == 1);});
+        releaseThisMolecule();
+
+        trapUntilWeFormMolecule.wait(lock, [&](){ return (h == 2 && o == 1);});
         }
 
         releaseOxygen();
@@ -68,11 +79,7 @@ public:
             std::unique_lock<std::mutex> lock(gLock);
             element_number += 1;
 
-            if (element_number % 3 == 0) {
-                h = 0;
-                o = 0;
-                trapOne.notify_all();
-            }
+            releaseNextSetOfElements();
         }
     }
 };
