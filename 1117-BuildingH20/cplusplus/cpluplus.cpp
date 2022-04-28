@@ -6,26 +6,24 @@
 
 using namespace std;
 
-std::mutex gLock;
-std::condition_variable gConditionVariable;
-
 class H2O {
 private:
     int h = 0;
     int o = 0;
     int element_number = 0;
-    std::mutex gLock;
-    std::condition_variable trapSurplusElements;
+    std::mutex _lock;
+    std::condition_variable trapUntilNextMoleculeReleased;
     std::condition_variable trapUntilWeFormMolecule;
 
+    // This method is called under a lock
     void releaseNextSetOfElements() {
         if (element_number % 3 == 0) {
                 h = 0;
                 o = 0;
-                trapSurplusElements.notify_all();
+                trapUntilNextMoleculeReleased.notify_all();
             }
     }
-
+    // This method is called under a lock
     void releaseThisMolecule() {
         if ((h == 2 && o == 1))
             {
@@ -35,18 +33,13 @@ private:
 
 
 public:
-    H2O() {
-    }
-
     void hydrogen(function<void()> releaseHydrogen) {
         {
-        std::unique_lock<std::mutex> lock(gLock);
-        trapSurplusElements.wait(lock, [&](){ return h < 2;});
+        std::unique_lock<std::mutex> lock(_lock);
+        trapUntilNextMoleculeReleased.wait(lock, [&](){ return h < 2;});
         h += 1;
 
         releaseThisMolecule();
-
-        trapUntilWeFormMolecule.notify_all();
 
         trapUntilWeFormMolecule.wait(lock, [&](){ return (h == 2 && o == 1);});
 
@@ -55,7 +48,7 @@ public:
         releaseHydrogen();
 
         {
-            std::unique_lock<std::mutex> lock(gLock);
+            std::unique_lock<std::mutex> lock(_lock);
             element_number += 1;
 
             releaseNextSetOfElements();
@@ -64,8 +57,8 @@ public:
 
     void oxygen(function<void()> releaseOxygen) {
         {
-        std::unique_lock<std::mutex> lock(gLock);
-        trapSurplusElements.wait(lock, [&](){ return o < 1;});
+        std::unique_lock<std::mutex> lock(_lock);
+        trapUntilNextMoleculeReleased.wait(lock, [&](){ return o < 1;});
         o += 1;
 
         releaseThisMolecule();
@@ -76,7 +69,7 @@ public:
         releaseOxygen();
 
         {
-            std::unique_lock<std::mutex> lock(gLock);
+            std::unique_lock<std::mutex> lock(_lock);
             element_number += 1;
 
             releaseNextSetOfElements();
