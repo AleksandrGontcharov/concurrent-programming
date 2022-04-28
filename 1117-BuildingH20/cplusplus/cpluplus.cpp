@@ -11,8 +11,9 @@ std::condition_variable gConditionVariable;
 
 class H2O {
 private:
-    int h = 2;
-    int o = 1;
+    int h = 0;
+    int o = 0;
+    int element_number = 0;
     std::mutex gLock;
     std::condition_variable gConditionVariable;
 
@@ -21,41 +22,59 @@ public:
     }
 
     void hydrogen(function<void()> releaseHydrogen) {
-        
+        // std::cout << "starting hydrogen" << h << std::endl;
+        {
         std::unique_lock<std::mutex> lock(gLock);
-        gConditionVariable.wait(lock, [&](){ return h > 0;});
+        gConditionVariable.wait(lock, [&](){ return h < 2;});
+        h += 1;
+        gConditionVariable.notify_all();
+
+
+                
+        gConditionVariable.wait(lock, [&](){ return (h == 2 && o == 1);});
+
+        }
 
         releaseHydrogen();
 
-        h = h - 1;
-        
-        if (h + o == 0) {
-            h = 2;
-            o = 1;
+        {
+            std::unique_lock<std::mutex> lock(gLock);
+            element_number += 1;
+
+            if (element_number % 3 == 0) {
+                h = 0;
+                o = 0;
+                gConditionVariable.notify_all();
+            }
         }
-        gConditionVariable.notify_all();
     }
 
     void oxygen(function<void()> releaseOxygen) {
-
-        std::unique_lock<std::mutex> lock(gLock);
-        gConditionVariable.wait(lock, [&](){ return o > 0;});
+        // std::cout << "starting oxygen" << std::endl;
         
+        {
+        std::unique_lock<std::mutex> lock(gLock);
+        gConditionVariable.wait(lock, [&](){ return o < 1;});
+        o += 1;
+        gConditionVariable.notify_all();
+
+        gConditionVariable.wait(lock, [&](){ return (h == 2 && o == 1);});
+        }
+
         releaseOxygen();
 
-        o = o - 1;
-        
-        if (h + o == 0) {
-            h = 2;
-            o = 1;
+        {
+            std::unique_lock<std::mutex> lock(gLock);
+            element_number += 1;
+
+            if (element_number % 3 == 0) {
+                h = 0;
+                o = 0;
+                gConditionVariable.notify_all();
+            }
         }
-        gConditionVariable.notify_all();
     }
 };
-
-void printNumber(int x) {
-    std::cout << x;
-}
 
 void releaseHydrogen() {
     std::cout << "H";
