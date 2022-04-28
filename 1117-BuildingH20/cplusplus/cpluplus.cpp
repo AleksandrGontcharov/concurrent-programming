@@ -12,7 +12,7 @@ private:
     int o = 0;
     int element_number = 0;
     std::mutex _lock;
-    std::condition_variable trapUntilNextMoleculeReleased;
+    std::condition_variable trapUntilAtomsForNextMoleculeArrived;
     std::condition_variable trapUntilWeFormMolecule;
 
     // This method is called under a lock
@@ -20,7 +20,7 @@ private:
         if (element_number % 3 == 0) {
                 h = 0;
                 o = 0;
-                trapUntilNextMoleculeReleased.notify_all();
+                trapUntilAtomsForNextMoleculeArrived.notify_all();
             }
     }
     // This method is called under a lock
@@ -36,7 +36,7 @@ public:
     void hydrogen(function<void()> releaseHydrogen) {
         {
         std::unique_lock<std::mutex> lock(_lock);
-        trapUntilNextMoleculeReleased.wait(lock, [&](){ return h < 2;});
+        trapUntilAtomsForNextMoleculeArrived.wait(lock, [&](){ return h < 2;});
         h += 1;
 
         releaseThisMolecule();
@@ -58,7 +58,7 @@ public:
     void oxygen(function<void()> releaseOxygen) {
         {
         std::unique_lock<std::mutex> lock(_lock);
-        trapUntilNextMoleculeReleased.wait(lock, [&](){ return o < 1;});
+        trapUntilAtomsForNextMoleculeArrived.wait(lock, [&](){ return o < 1;});
         o += 1;
 
         releaseThisMolecule();
