@@ -15,7 +15,8 @@ private:
     int o = 0;
     int element_number = 0;
     std::mutex gLock;
-    std::condition_variable gConditionVariable;
+    std::condition_variable trapOne;
+    std::condition_variable trapTwo;
 
 public:
     H2O() {
@@ -25,13 +26,13 @@ public:
         // std::cout << "starting hydrogen" << h << std::endl;
         {
         std::unique_lock<std::mutex> lock(gLock);
-        gConditionVariable.wait(lock, [&](){ return h < 2;});
+        trapOne.wait(lock, [&](){ return h < 2;});
         h += 1;
-        gConditionVariable.notify_all();
+        trapTwo.notify_all();
 
 
                 
-        gConditionVariable.wait(lock, [&](){ return (h == 2 && o == 1);});
+        trapTwo.wait(lock, [&](){ return (h == 2 && o == 1);});
 
         }
 
@@ -44,7 +45,7 @@ public:
             if (element_number % 3 == 0) {
                 h = 0;
                 o = 0;
-                gConditionVariable.notify_all();
+                trapOne.notify_all();
             }
         }
     }
@@ -54,11 +55,11 @@ public:
         
         {
         std::unique_lock<std::mutex> lock(gLock);
-        gConditionVariable.wait(lock, [&](){ return o < 1;});
+        trapOne.wait(lock, [&](){ return o < 1;});
         o += 1;
-        gConditionVariable.notify_all();
+        trapTwo.notify_all();
 
-        gConditionVariable.wait(lock, [&](){ return (h == 2 && o == 1);});
+        trapTwo.wait(lock, [&](){ return (h == 2 && o == 1);});
         }
 
         releaseOxygen();
@@ -70,7 +71,7 @@ public:
             if (element_number % 3 == 0) {
                 h = 0;
                 o = 0;
-                gConditionVariable.notify_all();
+                trapOne.notify_all();
             }
         }
     }
