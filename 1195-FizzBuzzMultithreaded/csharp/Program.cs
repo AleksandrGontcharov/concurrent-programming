@@ -3,89 +3,220 @@ namespace FizzBuzzMultithreaded;
 public class FizzBuzz {
     private int n;
 
+    private string whichThread = "Number";
+
+    static readonly object _locker = new object();
+
     public FizzBuzz(int n) {
         this.n = n;
     }
 
-    // printFizz() outputs "fizz".
     public void Fizz(Action printFizz) {
-        
+
+        int total;
+        lock (_locker)
+        {
+            total = numOfFizz(n);
+        }
+
+        for (int i = 1; i <= total; i++) {
+            lock (_locker)
+            {
+                while (!(whichThread == "Fizz")) {
+                   Monitor.Wait(_locker);
+                }
+            }
+
+        printFizz();               
+
+            lock (_locker)
+            {
+                whichThread = "Number";
+                Monitor.PulseAll(_locker);
+            }
+         }
     }
 
-    // printBuzzz() outputs "buzz".
     public void Buzz(Action printBuzz) {
+                int total;
+        lock (_locker)
+        {
+            total = numOfBuzz(n);
+        }
+
+        for (int i = 1; i <= total; i++) {
+            lock (_locker)
+            {
+                while (!(whichThread == "Buzz")) {
+                   Monitor.Wait(_locker);
+                }
+            }
+
+        printBuzz();               
+
+            lock (_locker)
+            {
+                whichThread = "Number";
+                Monitor.PulseAll(_locker);
+            }
+         }
         
     }
 
-    // printFizzBuzz() outputs "fizzbuzz".
     public void Fizzbuzz(Action printFizzBuzz) {
+                int total;
+        lock (_locker)
+        {
+            total = numOfFizzBuzz(n);
+        }
+
+        for (int i = 1; i <= total; i++) {
+            lock (_locker)
+            {
+                while (!(whichThread == "FizzBuzz")) {
+                   Monitor.Wait(_locker);
+                }
+            }
+
+        printFizzBuzz();               
+
+            lock (_locker)
+            {
+                whichThread = "Number";
+                Monitor.PulseAll(_locker);
+            }
+         }
         
     }
 
-    // printNumber(x) outputs "x", where x is an integer.
     public void Number(Action<int> printNumber) {
+
+        int total = 0;
+        lock (_locker)
+        {
+            total = n;
+        }
         
+        for (int i = 1; i <= total; i++) {
+            lock (_locker)
+            {                
+                whichThread = whoseTurnCalculation(i);
+
+
+                if (!(whichThread == "Number")) {
+
+                    while (!(whichThread == "Number")) {
+                        Monitor.PulseAll(_locker);
+                        Monitor.Wait(_locker);
+                    }
+                    // This continue ensures that the number of Fizz, Buzz, or FizzBuzz is not printed
+                    continue;
+                }
+                
+            }            
+            printNumber(i);
+        }
     }
-}
+
+
+    int numOfFizz(int n) {
+        int count = 0;
+        for (int i = 1; i <= n; i++) {
+            bool divisibleBy3 = (i % 3 == 0);
+            bool divisibleBy5 = (i % 5 == 0);
+            if (divisibleBy3 && !divisibleBy5) {
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    int numOfBuzz(int n) {
+        int count = 0;
+        for (int i = 1; i <= n; i++) {
+            bool divisibleBy3 = (i % 3 == 0);
+            bool divisibleBy5 = (i % 5 == 0);
+            if (!divisibleBy3 && divisibleBy5) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    int numOfFizzBuzz(int n) {
+        int count = 0;
+        for (int i = 1; i <= n; i++) {
+            bool divisibleBy3 = (i % 3 == 0);
+            bool divisibleBy5 = (i % 5 == 0);
+            if (divisibleBy3 && divisibleBy5) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    string whoseTurnCalculation(int i) {
+        bool divisibleBy3 = (i % 3 == 0);
+        bool divisibleBy5 = (i % 5 == 0);
+            
+        bool fizzTurn = (divisibleBy3 && !divisibleBy5);
+        bool buzzTurn = (!divisibleBy3 && divisibleBy5);
+        bool fizzBuzzTurn = (divisibleBy3 && divisibleBy5);
+        bool numberTurn = (!divisibleBy3 && !divisibleBy5);
+            
+        if (numberTurn) {
+            return "Number";
+             }
+        else if (fizzTurn) {
+            return "Fizz";
+        }
+        else if (buzzTurn) {
+            return "Buzz";
+        }
+        else  {
+            return "FizzBuzz";
+        }
+    }
 
 
     static void Main()
     {
-        FizzBuzz foo = new FizzBuzz();
+        FizzBuzz foo = new FizzBuzz(16);
 
-        void releaseHydrogen()
+        void printFizz()
         {
-            Console.WriteLine($"H - {Thread.CurrentThread.Name}");
+            Console.WriteLine("Fizz");
         }
 
-        void releaseOxygen()
+        void printBuzz()
         {
-            Console.WriteLine($"O - {Thread.CurrentThread.Name}");
+            Console.WriteLine("Buzz");
+
+        }
+        void printFizzBuzz()
+        {
+            Console.WriteLine("FizzBuzz");
+
+        }
+        void printNumber(int i)
+        {
+            Console.WriteLine(i);
 
         }
 
 
-        Thread threadH1 = new Thread(() => foo.Hydrogen(releaseHydrogen));
-        Thread threadH2 = new Thread(() => foo.Hydrogen(releaseHydrogen));
-        Thread threadH3 = new Thread(() => foo.Hydrogen(releaseHydrogen));
-        Thread threadH4 = new Thread(() => foo.Hydrogen(releaseHydrogen));
-        Thread threadH5 = new Thread(() => foo.Hydrogen(releaseHydrogen));
-        Thread threadH6 = new Thread(() => foo.Hydrogen(releaseHydrogen));
-        Thread threadH7 = new Thread(() => foo.Hydrogen(releaseHydrogen));
-        Thread threadH8 = new Thread(() => foo.Hydrogen(releaseHydrogen));
-        Thread threadO1 = new Thread(() => foo.Oxygen(releaseOxygen));
-        Thread threadO2 = new Thread(() => foo.Oxygen(releaseOxygen));
-        Thread threadO3 = new Thread(() => foo.Oxygen(releaseOxygen));
-        Thread threadO4 = new Thread(() => foo.Oxygen(releaseOxygen));
+        Thread threadA = new Thread(() => foo.Fizz(printFizz));
+        Thread threadB = new Thread(() => foo.Buzz(printBuzz));
+        Thread threadC = new Thread(() => foo.Fizzbuzz(printFizzBuzz));
+        Thread threadD = new Thread(() => foo.Number(printNumber));
 
 
-        threadH1.Name = "threadH1";
-        threadH2.Name = "threadH2";
-        threadH3.Name = "threadH3";
-        threadH4.Name = "threadH4";
-        threadH5.Name = "threadH5";
-        threadH6.Name = "threadH6";
-        threadH7.Name = "threadH7";
-        threadH8.Name = "threadH8";
-        threadO1.Name = "threadO1";
-        threadO2.Name = "threadO2";
-        threadO3.Name = "threadO3";
-        threadO4.Name = "threadO4";
 
+        threadA.Start();
+        threadB.Start();
+        threadC.Start();
+        threadD.Start();
 
-        threadH1.Start();
-        threadH2.Start();
-        threadH3.Start();
-        threadH4.Start();
-        threadH5.Start();
-        threadH6.Start();
-        //threadH7.Start();
-        //threadH8.Start();
-
-        threadO1.Start();
-        threadO2.Start();
-        threadO3.Start();
-        //threadO4.Start();
 
     }
 }
