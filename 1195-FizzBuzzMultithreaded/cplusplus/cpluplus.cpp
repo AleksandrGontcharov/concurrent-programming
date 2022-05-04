@@ -28,68 +28,78 @@ public:
     }
 
     void fizz(function<void()> printFizz) {
-         for (int i = 3; i <= n; i += 3) {
-            bool divisibleBy3 = (i % 3 == 0);
-            bool divisibleBy5 = (i % 5 == 0);
+        int total = 0;
+        {
+            std::unique_lock<std::mutex> lock(_lock);
+            total = numOfFizz(n);
+        }
 
-            if (divisibleBy3 && !divisibleBy5)
+        for (int i = 1; i <= total; i++) {
+
             {
-                {
-                    std::unique_lock<std::mutex> lock(_lock);
-                    // std::cout << "fizz blocking itself " << i << std::endl;
-                    cvFizz.wait(lock, [&](){ return fizzTurn;});
-                }
+                std::unique_lock<std::mutex> lock(_lock);
+                // std::cout << "fizz blocking itself " << i << std::endl;
+                cvFizz.wait(lock, [&](){ return fizzTurn;});
+            }
 
-                printFizz();                
-                {
-                    std::unique_lock<std::mutex> lock(_lock);
-                    fizzTurn = false;
-                    cvFizz.notify_all();
-                }
+        printFizz();                
+        
+            {
+                std::unique_lock<std::mutex> lock(_lock);
+                fizzTurn = false;
+                cvFizz.notify_all();
             }
          }
 
     }
 
     void buzz(function<void()> printBuzz) {
-            for (int i = 5; i <= n; i += 5) {
-            bool divisibleBy3 = (i % 3 == 0);
-            bool divisibleBy5 = (i % 5 == 0);
+        int total = 0;
+        {
+            std::unique_lock<std::mutex> lock(_lock);
+            total = numOfBuzz(n);
+        }
 
-            if (!divisibleBy3 && divisibleBy5) {
-                {
-                    std::unique_lock<std::mutex> lock(_lock);
-                    // std::cout << "buzz blocking itself " << i << std::endl;
-                    cvBuzz.wait(lock, [&](){ return buzzTurn;});
-                }
-                printBuzz();
-                {
-                    std::unique_lock<std::mutex> lock(_lock);
-                    buzzTurn = false;
-                    cvBuzz.notify_all();
-                }
+        for (int i = 1; i <= total; i++) {
+
+            {
+                std::unique_lock<std::mutex> lock(_lock);
+                // std::cout << "buzz blocking itself " << i << std::endl;
+                cvBuzz.wait(lock, [&](){ return buzzTurn;});
+            }
+
+        printBuzz();                
+        
+            {
+                std::unique_lock<std::mutex> lock(_lock);
+                buzzTurn = false;
+                cvBuzz.notify_all();
             }
          }
     }
 
 	void fizzbuzz(function<void()> printFizzBuzz) {
 
-        for (int i = 15; i <= n; i += 15) {
-            bool divisibleBy3 = (i % 3 == 0);
-            bool divisibleBy5 = (i % 5 == 0);
+        int total = 0;
+        {
+            std::unique_lock<std::mutex> lock(_lock);
+            total = numOfFizzBuzz(n);
+        }
 
-            if (divisibleBy3 && divisibleBy5) {
-                {
-                    std::unique_lock<std::mutex> lock(_lock);
-                    // std::cout << "buzz blocking itself " << i << std::endl;
-                    cvFizzBuzz.wait(lock, [&](){ return fizzBuzzTurn;});
-                }
-                printFizzBuzz();
-                {
-                    std::unique_lock<std::mutex> lock(_lock);
-                    fizzBuzzTurn = false;
-                    cvFizzBuzz.notify_all();
-                }
+        for (int i = 1; i <= total; i++) {
+
+            {
+                std::unique_lock<std::mutex> lock(_lock);
+                // std::cout << "buzz blocking itself " << i << std::endl;
+                cvFizzBuzz.wait(lock, [&](){ return fizzBuzzTurn;});
+            }
+
+        printFizzBuzz();                
+        
+            {
+                std::unique_lock<std::mutex> lock(_lock);
+                fizzBuzzTurn = false;
+                cvFizzBuzz.notify_all();
             }
          }
     }
@@ -99,14 +109,18 @@ public:
             bool divisibleBy3 = (i % 3 == 0);
             bool divisibleBy5 = (i % 5 == 0);
             
-            fizzTurn = (divisibleBy3 && !divisibleBy5);
-            buzzTurn = (!divisibleBy3 && divisibleBy5);
-            fizzBuzzTurn = (divisibleBy3 && divisibleBy5);
-            numberTurn = (!divisibleBy3 && !divisibleBy5);
+            {
+                std::unique_lock<std::mutex> lock(_lock);
+                fizzTurn = (divisibleBy3 && !divisibleBy5);
+                buzzTurn = (!divisibleBy3 && divisibleBy5);
+                fizzBuzzTurn = (divisibleBy3 && divisibleBy5);
+                numberTurn = (!divisibleBy3 && !divisibleBy5);
+            }
 
             if (numberTurn) {
                 printNumber(i);
             }
+
             else if (fizzTurn) {
                 std::unique_lock<std::mutex> lock(_lock);
                 // std::cout << "fizz turn so blocking myself" << std::endl;
@@ -126,8 +140,43 @@ public:
                 cvFizzBuzz.notify_all();
                 cvFizzBuzz.wait(lock, [&](){ return !fizzBuzzTurn;});
             }
-
         }
+    }
+
+    int numOfFizz(int n) {
+        int count = 0;
+        for (int i = 1; i <= n; i++) {
+            bool divisibleBy3 = (i % 3 == 0);
+            bool divisibleBy5 = (i % 5 == 0);
+            if (divisibleBy3 && !divisibleBy5) {
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    int numOfBuzz(int n) {
+        int count = 0;
+        for (int i = 1; i <= n; i++) {
+            bool divisibleBy3 = (i % 3 == 0);
+            bool divisibleBy5 = (i % 5 == 0);
+            if (!divisibleBy3 && divisibleBy5) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    int numOfFizzBuzz(int n) {
+        int count = 0;
+        for (int i = 1; i <= n; i++) {
+            bool divisibleBy3 = (i % 3 == 0);
+            bool divisibleBy5 = (i % 5 == 0);
+            if (divisibleBy3 && divisibleBy5) {
+                count++;
+            }
+        }
+        return count;
     }
 };
 
@@ -149,7 +198,7 @@ void printNumber(int n) {
 
 int main()
 {
-    FizzBuzz foo(31);
+    FizzBuzz foo(16);
 
     std::thread threadA([&] {
                 foo.fizz(printFizz);
