@@ -16,10 +16,6 @@ class FizzBuzz {
 private:
     int n;
 
-
-    bool divisibleBy3 = false;
-    bool divisibleBy5 = false;
-
     bool fizzTurn = false;
     bool buzzTurn = false;
     bool fizzBuzzTurn = false;
@@ -32,8 +28,8 @@ public:
 
     void fizz(function<void()> printFizz) {
          for (int i = 3; i <= n; i += 3) {
-            divisibleBy3 = (i % 3 == 0);
-            divisibleBy5 = (i % 5 == 0);
+            bool divisibleBy3 = (i % 3 == 0);
+            bool divisibleBy5 = (i % 5 == 0);
 
             if (divisibleBy3 && !divisibleBy5)
             {
@@ -56,8 +52,8 @@ public:
 
     void buzz(function<void()> printBuzz) {
             for (int i = 5; i <= n; i += 5) {
-            divisibleBy3 = (i % 3 == 0);
-            divisibleBy5 = (i % 5 == 0);
+            bool divisibleBy3 = (i % 3 == 0);
+            bool divisibleBy5 = (i % 5 == 0);
 
             if (!divisibleBy3 && divisibleBy5) {
                 {
@@ -78,8 +74,8 @@ public:
 	void fizzbuzz(function<void()> printFizzBuzz) {
 
         for (int i = 15; i <= n; i += 15) {
-            divisibleBy3 = (i % 3 == 0);
-            divisibleBy5 = (i % 5 == 0);
+            bool divisibleBy3 = (i % 3 == 0);
+            bool divisibleBy5 = (i % 5 == 0);
 
             if (divisibleBy3 && divisibleBy5) {
                 {
@@ -99,8 +95,8 @@ public:
 
     void number(function<void(int)> printNumber) {
         for (int i = 1; i <= n; i++) {
-            divisibleBy3 = (i % 3 == 0);
-            divisibleBy5 = (i % 5 == 0);
+            bool divisibleBy3 = (i % 3 == 0);
+            bool divisibleBy5 = (i % 5 == 0);
             
             fizzTurn = (divisibleBy3 && !divisibleBy5);
             buzzTurn = (!divisibleBy3 && divisibleBy5);
