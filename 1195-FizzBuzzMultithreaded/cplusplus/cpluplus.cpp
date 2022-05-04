@@ -6,11 +6,6 @@
 
 using namespace std;
 
-// Note: these should be private members of the class (not global variables) - it is not compiling for me when I put them there.
-std::mutex _lock;
-std::condition_variable cvFizz;
-std::condition_variable cvBuzz;
-std::condition_variable cvFizzBuzz;
 
 class FizzBuzz {
 private:
@@ -20,6 +15,12 @@ private:
     bool buzzTurn = false;
     bool fizzBuzzTurn = false;
     bool numberTurn = false;
+
+    std::mutex _lock;
+    std::condition_variable cvFizz;
+    std::condition_variable cvBuzz;
+    std::condition_variable cvFizzBuzz;
+
 
 public:
     FizzBuzz(int n) {
@@ -148,7 +149,7 @@ void printNumber(int n) {
 
 int main()
 {
-    FizzBuzz foo = FizzBuzz(31);
+    FizzBuzz foo(31);
 
     std::thread threadA([&] {
                 foo.fizz(printFizz);
