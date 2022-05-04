@@ -32,7 +32,6 @@ public:
         this->n = n;
     }
 
-    // printFizz() outputs "fizz".
     void fizz(function<void()> printFizz) {
          for (int i = 3; i <= n; i += 3) {
             divisibleBy3 = (i % 3 == 0);
@@ -57,7 +56,6 @@ public:
 
     }
 
-    // printBuzz() outputs "buzz".
     void buzz(function<void()> printBuzz) {
             for (int i = 5; i <= n; i += 5) {
             divisibleBy3 = (i % 3 == 0);
@@ -79,7 +77,6 @@ public:
          }
     }
 
-    // printFizzBuzz() outputs "fizzbuzz".
 	void fizzbuzz(function<void()> printFizzBuzz) {
 
         for (int i = 15; i <= n; i += 15) {
@@ -102,7 +99,6 @@ public:
          }
     }
 
-    // printNumber(x) outputs "x", where x is an integer.
     void number(function<void(int)> printNumber) {
         for (int i = 1; i <= n; i++) {
             divisibleBy3 = (i % 3 == 0);
