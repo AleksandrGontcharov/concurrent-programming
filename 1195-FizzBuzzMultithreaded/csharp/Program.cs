@@ -12,7 +12,6 @@ public class FizzBuzz {
     }
 
     public void Fizz(Action printFizz) {
-
         int total;
         lock (_locker)
         {
@@ -20,6 +19,7 @@ public class FizzBuzz {
         }
 
         for (int i = 1; i <= total; i++) {
+
             lock (_locker)
             {
                 while (!(whichThread == "Fizz")) {
@@ -27,7 +27,7 @@ public class FizzBuzz {
                 }
             }
 
-        printFizz();               
+            printFizz();               
 
             lock (_locker)
             {
@@ -38,7 +38,7 @@ public class FizzBuzz {
     }
 
     public void Buzz(Action printBuzz) {
-                int total;
+        int total;
         lock (_locker)
         {
             total = numOfBuzz(n);
@@ -52,7 +52,7 @@ public class FizzBuzz {
                 }
             }
 
-        printBuzz();               
+            printBuzz();               
 
             lock (_locker)
             {
@@ -60,11 +60,10 @@ public class FizzBuzz {
                 Monitor.PulseAll(_locker);
             }
          }
-        
     }
 
     public void Fizzbuzz(Action printFizzBuzz) {
-                int total;
+        int total;
         lock (_locker)
         {
             total = numOfFizzBuzz(n);
@@ -78,7 +77,7 @@ public class FizzBuzz {
                 }
             }
 
-        printFizzBuzz();               
+            printFizzBuzz();               
 
             lock (_locker)
             {
@@ -86,7 +85,6 @@ public class FizzBuzz {
                 Monitor.PulseAll(_locker);
             }
          }
-        
     }
 
     public void Number(Action<int> printNumber) {
