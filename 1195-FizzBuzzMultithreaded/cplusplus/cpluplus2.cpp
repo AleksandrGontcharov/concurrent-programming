@@ -42,8 +42,8 @@ public:
             {
                 std::unique_lock<std::mutex> lock(_lock);
                 whichThread = "Number";
-                cv.notify_all();
             }
+            cv.notify_all();
          }
 
     }
@@ -67,8 +67,8 @@ public:
             {
                 std::unique_lock<std::mutex> lock(_lock);
                 whichThread = "Number";
-                cv.notify_all();
             }
+            cv.notify_all();
          }
     }
 
@@ -84,7 +84,6 @@ public:
 
             {
                 std::unique_lock<std::mutex> lock(_lock);
-                // std::cout << "Fizzbuzz blocking itself " << i << whoseTurn << std::endl;
                 cv.wait(lock, [&](){ return (whichThread == "FizzBuzz");});
             }
 
@@ -93,8 +92,8 @@ public:
             {
                 std::unique_lock<std::mutex> lock(_lock);
                 whichThread = "Number";
-                cv.notify_all();
             }
+            cv.notify_all();
          }
     }
 
