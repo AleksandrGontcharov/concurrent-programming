@@ -15,10 +15,8 @@ std::condition_variable cvFizzBuzz;
 class FizzBuzz {
 private:
     int n;
-    int h = 0;
-    int o = 0;
-    
-    // int element_number = 0;
+
+
     bool divisibleBy3 = false;
     bool divisibleBy5 = false;
 
