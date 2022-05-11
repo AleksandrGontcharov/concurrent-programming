@@ -177,7 +177,7 @@ public class FizzBuzz {
     }
 
 
-    static void Main()
+    static void Main2()
     {
         FizzBuzz foo = new FizzBuzz(16);
 
