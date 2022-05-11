@@ -12,27 +12,27 @@ public class FizzBuzz {
     }
 
     public void Fizz(Action printFizz) {
-        WordSubroutine(printFizz, null, "Fizz");
+        WordSubroutine((k) => printFizz(),  (k) =>  ((k % 3 == 0) && !(k % 5 == 0)));
     }
 
     public void Buzz(Action printBuzz) {
-        WordSubroutine(printBuzz, null, "Buzz");
+        WordSubroutine((k) => printBuzz(), (k) => (!(k % 3 == 0) && (k % 5 == 0)));
     }
 
     public void Fizzbuzz(Action printFizzBuzz) {
-        WordSubroutine(printFizzBuzz, null, "FizzBuzz");
+        WordSubroutine((k) => printFizzBuzz(),  (k) => ((k % 3 == 0) && (k % 5 == 0)));
     }
 
     public void Number(Action<int> printNumber) {
-        WordSubroutine(null, printNumber, "Number");
+        WordSubroutine(printNumber, (k) => (!(k % 3 == 0) && !(k % 5 == 0)));
 
     }
 
-    void WordSubroutine(Action? printWord, Action<int>? printNumber, string Word) {
+    void WordSubroutine(Action<int> printFunction, Func<int, bool> condition) {
         while (true) {
             lock (_locker)
             {                            
-                while (!(whoseTurnCalculation(i) == Word || i > n)) {
+                while (!(condition(i) || i > n)) {
                     Monitor.Wait(_locker);
                 }
                 if (i > n) {
@@ -40,43 +40,13 @@ public class FizzBuzz {
                 }
             }
 
-            if (printWord != null) {
-                printWord();
-            }
-            if (printNumber != null) {
-                lock (_locker) {
-                    printNumber(i);
-                }
-            }
+            printFunction(i);
 
             lock (_locker)
             { 
                 i = i + 1;
                 Monitor.PulseAll(_locker);
             }
-        }
-    }
-
-    string whoseTurnCalculation(int i) {
-        bool divisibleBy3 = (i % 3 == 0);
-        bool divisibleBy5 = (i % 5 == 0);
-            
-        bool fizzTurn = (divisibleBy3 && !divisibleBy5);
-        bool buzzTurn = (!divisibleBy3 && divisibleBy5);
-        bool fizzBuzzTurn = (divisibleBy3 && divisibleBy5);
-        bool numberTurn = (!divisibleBy3 && !divisibleBy5);
-            
-        if (numberTurn) {
-            return "Number";
-             }
-        else if (fizzTurn) {
-            return "Fizz";
-        }
-        else if (buzzTurn) {
-            return "Buzz";
-        }
-        else  {
-            return "FizzBuzz";
         }
     }
 
