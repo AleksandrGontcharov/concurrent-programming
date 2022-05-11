@@ -38,12 +38,9 @@ public class FizzBuzz {
                 if (i > n) {
                     break;
                 }
-            }
 
-            printFunction(i);
-
-            lock (_locker)
-            { 
+                printFunction(i);
+             
                 i = i + 1;
                 Monitor.PulseAll(_locker);
             }
