@@ -10,13 +10,13 @@ public class FizzBuzz {
     public FizzBuzz(int n) {
         this.n = n;
     }
+
     public void Fizz(Action printFizz) {
         WordSubroutine(printFizz, null, "Fizz");
     }
 
     public void Buzz(Action printBuzz) {
         WordSubroutine(printBuzz, null, "Buzz");
-
     }
 
     public void Fizzbuzz(Action printFizzBuzz) {
@@ -29,7 +29,6 @@ public class FizzBuzz {
     }
 
     void WordSubroutine(Action? printWord, Action<int>? printNumber, string Word) {
-        
         while (true) {
             lock (_locker)
             {                            
