@@ -30,6 +30,7 @@ public class FizzBuzz {
 
     void WordSubroutine(Action<int> printFunction, Func<int, bool> condition) {
         while (true) {
+            int k;
             lock (_locker)
             {                            
                 while (!(condition(i) || i > n)) {
@@ -38,8 +39,13 @@ public class FizzBuzz {
                 if (i > n) {
                     break;
                 }
+                k = i;
+            }
 
-                printFunction(i);
+            printFunction(k);
+
+            lock (_locker)
+            { 
              
                 i = i + 1;
                 Monitor.PulseAll(_locker);
