@@ -44,7 +44,9 @@ public class FizzBuzz {
                 printWord();
             }
             if (printNumber != null) {
-                printNumber(i);
+                lock (_locker) {
+                    printNumber(i);
+                }
             }
 
             lock (_locker)
