@@ -16,14 +16,12 @@ public:
 
         while (!taken.compare_exchange_strong({old_value = false}, true))
         {
-            // std::cout << "locked: " << taken.load() << std::endl;
             continue;
         }
     }
 
     void unlock()
     {
-        // std::cout << "unlocking: " << taken.load() << std::endl;
         bool old_value = true;
         taken.compare_exchange_strong({old_value = true}, false);
     }
